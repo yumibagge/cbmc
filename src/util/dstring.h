@@ -39,7 +39,7 @@ public:
   #ifdef __GNUC__
   constexpr
   #endif
-  dstringt():no(0)
+  dstringt() noexcept:no(0)
   {
   }
 

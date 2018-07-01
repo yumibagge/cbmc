@@ -172,7 +172,7 @@ public:
   bool is_nil() const { return id()==ID_nil; }
   bool is_not_nil() const { return id()!=ID_nil; }
 
-  explicit irept(const irep_idt &_id)
+  explicit irept(const irep_idt &_id) noexcept
 #ifdef SHARING
     :data(&empty_d)
 #endif
@@ -182,12 +182,12 @@ public:
 
   #ifdef SHARING
   // constructor for blank irep
-  irept():data(&empty_d)
+  irept() noexcept:data(&empty_d)
   {
   }
 
   // copy constructor
-  irept(const irept &irep):data(irep.data)
+  irept(const irept &irep) noexcept:data(irep.data)
   {
     if(data!=&empty_d)
     {
@@ -204,7 +204,7 @@ public:
   // Copy from rvalue reference.
   // Note that this does avoid a branch compared to the
   // standard copy constructor above.
-  irept(irept &&irep):data(irep.data)
+  irept(irept &&irep) noexcept:data(irep.data)
   {
     #ifdef IREP_DEBUG
     std::cout << "COPY MOVE\n";
@@ -234,7 +234,7 @@ public:
   #ifdef USE_MOVE
   // Note that the move assignment operator does avoid
   // three branches compared to standard operator above.
-  irept &operator=(irept &&irep)
+  irept &operator=(irept &&irep) noexcept
   {
     #ifdef IREP_DEBUG
     std::cout << "ASSIGN MOVE\n";
