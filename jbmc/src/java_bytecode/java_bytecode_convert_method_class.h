@@ -268,7 +268,7 @@ protected:
 
   codet convert_instructions(
     const methodt &,
-    const code_typet &,
+    const java_method_typet &,
     const irep_idt &,
     const java_class_typet::java_lambda_method_handlest &);
 
