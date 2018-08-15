@@ -62,6 +62,21 @@ static std::ostream &format_rec(std::ostream &os, const multi_ary_exprt &src)
 {
   bool first = true;
 
+  std::string operator_str;
+
+  if(src.id() == ID_and)
+    operator_str = u8"\u2227"; // wedge, U+2227
+  else if(src.id() == ID_or)
+    operator_str = u8"\u2228"; // vee, U+2228
+  else if(src.id() == ID_le)
+    operator_str = u8"\u2264"; // <=, U+2264
+  else if(src.id() == ID_ge)
+    operator_str = u8"\u2265"; // >=, U+2265
+  else if(src.id() == ID_notequal)
+    operator_str = u8"\u2260"; // /=, U+2260
+  else
+    operator_str = id2string(src.id());
+
   for(const auto &op : src.operands())
   {
     if(first)
@@ -95,7 +110,7 @@ static std::ostream &format_rec(std::ostream &os, const binary_exprt &src)
 static std::ostream &format_rec(std::ostream &os, const unary_exprt &src)
 {
   if(src.id() == ID_not)
-    os << '!';
+    os << u8"\u00ac"; // neg, U+00AC
   else if(src.id() == ID_unary_minus)
     os << '-';
   else
