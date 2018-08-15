@@ -15,8 +15,8 @@ Author: Daniel Kroening, kroening@kroening.com
 #include <fstream>
 
 #include <langapi/mode.h>
-#include <langapi/language_util.h>
 
+#include <util/format_expr.h>
 #include <util/json.h>
 #include <util/json_expr.h>
 
@@ -52,9 +52,7 @@ void bmct::show_vcc_plain(std::ostream &out)
       {
         if(!p_it->ignore)
         {
-          std::string string_value=
-            from_expr(ns, p_it->source.pc->function, p_it->cond_expr);
-          out << "{-" << count << "} " << string_value << "\n";
+          out << "{-" << count << "} " << format(p_it->cond_expr) << '\n';
 
           #if 0
           languages.from_expr(p_it->guard_expr, string_value);
@@ -68,11 +66,9 @@ void bmct::show_vcc_plain(std::ostream &out)
 
     out << "|--------------------------" << "\n";
 
-    std::string string_value=
-      from_expr(ns, s_it->source.pc->function, s_it->cond_expr);
-    out << "{" << 1 << "} " << string_value << "\n";
+    out << "{" << 1 << "} " << format(s_it->cond_expr) << '\n';
 
-    out << "\n";
+    out << '\n';
   }
 }
 
@@ -118,15 +114,17 @@ void bmct::show_vcc_json(std::ostream &out)
          p_it->is_constraint()) &&
          !p_it->ignore)
       {
-        std::string string_value=
-          from_expr(ns, p_it->source.pc->function, p_it->cond_expr);
-        json_constraints.push_back(json_stringt(string_value));
+        std::ostringstream stream;
+        stream << format(p_it->cond_expr);
+        json_constraints.push_back(json_stringt(stream.str()));
       }
     }
 
-    std::string string_value=
-      from_expr(ns, s_it->source.pc->function, s_it->cond_expr);
-    object["expression"]=json_stringt(string_value);
+    {
+      std::ostringstream stream;
+      stream << format(s_it->cond_expr);
+      object["expression"]=json_stringt(stream.str());
+    }
   }
 
   out << ",\n" << json_result;
