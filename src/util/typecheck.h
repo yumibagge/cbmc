@@ -10,7 +10,7 @@ Author: Daniel Kroening, kroening@kroening.com
 #ifndef CPROVER_UTIL_TYPECHECK_H
 #define CPROVER_UTIL_TYPECHECK_H
 
-#include "expr.h"
+#include "std_code.h"
 #include "message.h"
 
 class typecheckt:public messaget
@@ -31,6 +31,11 @@ public:
 
   // not pretty, but makes transition easier
   void err_location(const exprt &src)
+  {
+    err_location(src.find_source_location());
+  }
+
+  void err_location(const codet &src)
   {
     err_location(src.find_source_location());
   }

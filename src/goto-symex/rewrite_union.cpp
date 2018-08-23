@@ -113,7 +113,9 @@ void rewrite_union(
 {
   Forall_goto_program_instructions(it, goto_function.body)
   {
-    rewrite_union(it->code, ns);
+    for(auto &op : it->code.operands())
+      rewrite_union(op, ns);
+
     rewrite_union(it->guard, ns);
   }
 }

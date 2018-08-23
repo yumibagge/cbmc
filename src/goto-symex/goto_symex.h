@@ -250,6 +250,8 @@ protected:
   // c) clean up byte_extract on the lhs of an assignment
   void clean_expr(
     exprt &, statet &, bool write);
+  void clean_expr(
+    codet &, statet &, bool write);
 
   void trigger_auto_object(const exprt &, statet &);
   void initialize_auto_object(const exprt &, statet &);
@@ -456,7 +458,7 @@ protected:
   virtual void symex_fkt(statet &, const code_function_callt &);
   virtual void symex_macro(statet &, const code_function_callt &);
   virtual void symex_trace(statet &, const code_function_callt &);
-  virtual void symex_printf(statet &, const exprt &rhs);
+  virtual void symex_printf(statet &, const irept &);
   virtual void symex_input(statet &, const codet &);
   virtual void symex_output(statet &, const codet &);
 

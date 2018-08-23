@@ -311,8 +311,9 @@ irep_idt get_string_argument(const exprt &src, const namespacet &ns)
 
 void goto_symext::symex_printf(
   statet &state,
-  const exprt &rhs)
+  const irept &rhs)
 {
+  #if 0
   if(rhs.operands().empty())
     throw "printf expected to have at least one operand";
 
@@ -333,6 +334,7 @@ void goto_symext::symex_printf(
     target.output_fmt(
       state.guard.as_expr(),
       state.source, "printf", format_string, args);
+  #endif
 }
 
 void goto_symext::symex_input(
