@@ -229,24 +229,27 @@ std::ostream &format_rec(std::ostream &os, const exprt &expr)
     return os << format(if_expr.cond()) << '?' << format(if_expr.true_case())
               << ':' << format(if_expr.false_case());
   }
-  else if(id == ID_code)
-  {
-    const auto &code = to_code(expr);
-    const irep_idt &statement = code.get_statement();
-
-    if(statement == ID_assign)
-      return os << format(to_code_assign(code).lhs()) << " = "
-                << format(to_code_assign(code).rhs()) << ';';
-    else if(statement == ID_block)
-    {
-      os << '{';
-      for(const auto &s : to_code_block(code).operands())
-        os << ' ' << format(s);
-      return os << " }";
-    }
-    else
-      return fallback_format_rec(os, expr);
-  }
   else
     return fallback_format_rec(os, expr);
+}
+
+// The below generates a string in a generic syntax
+// that is inspired by C/C++/Java, and is meant for debugging
+// purposes.
+std::ostream &format_rec(std::ostream &os, const codet &code)
+{
+  const irep_idt &statement = code.get_statement();
+
+  if(statement == ID_assign)
+    return os << format(to_code_assign(code).lhs()) << " = "
+              << format(to_code_assign(code).rhs()) << ';';
+  else if(statement == ID_block)
+  {
+    os << '{';
+    for(const auto &s : to_code_block(code).operands())
+      os << ' ' << format(s);
+    return os << " }";
+  }
+  else
+    return os << statement;
 }
