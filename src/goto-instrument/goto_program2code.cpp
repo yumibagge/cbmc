@@ -1686,20 +1686,18 @@ static bool has_labels(const codet &code)
   return false;
 }
 
-static bool move_label_ifthenelse(
-    exprt &expr,
-    exprt &label_dest)
+static bool move_label_ifthenelse(exprt &expr, exprt &label_dest)
 {
-  if(expr.is_nil() ||
-      to_code(expr).get_statement()!=ID_block)
+  if(expr.is_nil() || to_code(expr).get_statement() != ID_block)
     return false;
 
   code_blockt &block=to_code_block(to_code(expr));
-  if(!block.has_operands() ||
-      to_code(block.operands().back()).get_statement()!=ID_label)
+  if(
+    block.statements().empty() ||
+    block.statements().back().get_statement() != ID_label)
     return false;
 
-  code_labelt &label=to_code_label(to_code(block.operands().back()));
+  code_labelt &label = to_code_label(block.statements().back());
   if(label.get_label().empty() ||
       label.code().get_statement()!=ID_skip)
     return false;

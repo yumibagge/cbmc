@@ -259,7 +259,7 @@ optionalt<codet> cpp_typecheckt::cpp_constructor(
 
     tmp_this=address_of_exprt(object_tc);
 
-    if(block.operands().empty())
+    if(block.statements().empty())
       return to_code(initializer);
     else
     {

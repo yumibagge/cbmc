@@ -420,7 +420,7 @@ protected:
   virtual void typecheck_try_catch(codet &code);
   virtual void typecheck_member_initializer(codet &code);
   virtual void typecheck_decl(codet &code);
-  virtual void typecheck_block(codet &code);
+  virtual void typecheck_block(code_blockt &code);
   virtual void typecheck_ifthenelse(code_ifthenelset &code);
   virtual void typecheck_while(code_whilet &code);
   virtual void typecheck_switch(code_switcht &code);

@@ -101,19 +101,41 @@ inline codet &to_code(exprt &expr)
 class code_blockt:public codet
 {
 public:
+  typedef std::vector<codet> code_operandst;
+
+  code_operandst &code_operands()
+  {
+    return (code_operandst &)get_sub();
+  }
+
+  const code_operandst &code_operands() const
+  {
+    return (const code_operandst &)get_sub();
+  }
+
   code_blockt():codet(ID_block)
   {
   }
 
   explicit code_blockt(const std::list<codet> &_list):codet(ID_block)
   {
-    operandst &o=operands();
-    reserve_operands(_list.size());
+    auto &o = code_operands();
+    o.reserve(_list.size());
     for(std::list<codet>::const_iterator
         it=_list.begin();
         it!=_list.end();
         it++)
       o.push_back(*it);
+  }
+
+  code_operandst &statements()
+  {
+    return code_operands();
+  }
+
+  const code_operandst &statements() const
+  {
+    return code_operands();
   }
 
   void move(codet &code)
