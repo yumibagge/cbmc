@@ -118,12 +118,12 @@ public:
 
   void move(codet &code)
   {
-    move_to_operands(code);
+    exprt::move_to_operands(code);
   }
 
   void add(const codet &code)
   {
-    copy_to_operands(code);
+    exprt::copy_to_operands(code);
   }
 
   void add(codet code, const source_locationt &loc)

@@ -873,7 +873,7 @@ code_blockt &java_bytecode_convert_methodt::get_or_create_block_for_pcrange(
   for(auto blockidx=child_offset, blocklim=child_offset+nblocks;
       blockidx!=blocklim;
       ++blockidx)
-    newblock.move_to_operands(this_block_children[blockidx]);
+    newblock.move(to_code(this_block_children[blockidx]));
 
   // Relabel the inner header:
   to_code_label(to_code(newblock.operands()[0])).set_label(new_label_irep);
@@ -1728,7 +1728,7 @@ codet java_bytecode_convert_methodt::convert_instructions(
           {
             symbol_exprt lhs=tmp_variable("$stack", s_it->type());
             code_assignt a(lhs, *s_it);
-            more_code.copy_to_operands(a);
+            more_code.add(a);
 
             s_it->swap(lhs);
           }
@@ -1744,7 +1744,7 @@ codet java_bytecode_convert_methodt::convert_instructions(
             assert(has_prefix(os_it->get_string(ID_C_base_name), "$stack"));
             symbol_exprt lhs=to_symbol_expr(*os_it);
             code_assignt a(lhs, expr);
-            more_code.copy_to_operands(a);
+            more_code.add(a);
 
             expr.swap(lhs);
             ++os_it;
@@ -1753,7 +1753,7 @@ codet java_bytecode_convert_methodt::convert_instructions(
 
         if(results.empty())
         {
-          more_code.copy_to_operands(c);
+          more_code.add(c);
           c.swap(more_code);
         }
         else
@@ -1835,7 +1835,7 @@ codet java_bytecode_convert_methodt::convert_instructions(
     if(start_new_block)
     {
       code_labelt newlabel(label(std::to_string(address)), code_blockt());
-      root_block.move_to_operands(newlabel);
+      root_block.move(newlabel);
       root.branch.push_back(block_tree_nodet::get_leaf());
       assert((root.branch_addresses.empty() ||
               root.branch_addresses.back()<address) &&
@@ -1913,7 +1913,7 @@ codet java_bytecode_convert_methodt::convert_instructions(
   }
 
   for(auto &block : root_block.operands())
-    code.move_to_operands(block);
+    code.move(to_code(block));
 
   return code;
 }
@@ -2258,8 +2258,8 @@ void java_bytecode_convert_methodt::convert_invoke(
     if(clinit_call.get_statement() != ID_skip)
     {
       code_blockt ret_block;
-      ret_block.move_to_operands(clinit_call);
-      ret_block.move_to_operands(c);
+      ret_block.move(clinit_call);
+      ret_block.move(c);
       c = std::move(ret_block);
     }
   }
@@ -2325,8 +2325,8 @@ void java_bytecode_convert_methodt::convert_athrow(
     assume_code.add_source_location() = assume_location;
 
     code_blockt ret_block;
-    ret_block.move_to_operands(assert_code);
-    ret_block.move_to_operands(assume_code);
+    ret_block.move(assert_code);
+    ret_block.move(assume_code);
     c = ret_block;
   }
   else
@@ -2399,8 +2399,8 @@ codet &java_bytecode_convert_methodt::do_exception_handling(
       }
 
       code_blockt try_block;
-      try_block.move_to_operands(catch_push);
-      try_block.move_to_operands(c);
+      try_block.move(catch_push);
+      try_block.move(c);
       c = try_block;
     }
     else
@@ -2440,8 +2440,8 @@ codet &java_bytecode_convert_methodt::do_exception_handling(
         // add CATCH_POP instruction
         code_pop_catcht catch_pop;
         code_blockt end_try_block;
-        end_try_block.move_to_operands(c);
-        end_try_block.move_to_operands(catch_pop);
+        end_try_block.move(c);
+        end_try_block.move(catch_pop);
         c = end_try_block;
       }
     }
@@ -2468,11 +2468,11 @@ void java_bytecode_convert_methodt::convert_multianewarray(
     constant_exprt size_limit = from_integer(max_array_length, java_int_type());
     binary_relation_exprt le_max_size(op[0], ID_le, size_limit);
     code_assumet assume_le_max_size(le_max_size);
-    create.move_to_operands(assume_le_max_size);
+    create.move(assume_le_max_size);
   }
 
   const exprt tmp = tmp_variable("newarray", ref_type);
-  create.copy_to_operands(code_assignt(tmp, java_new_array));
+  create.add(code_assignt(tmp, java_new_array));
   c = std::move(create);
   results[0] = tmp;
 }
@@ -2525,10 +2525,10 @@ void java_bytecode_convert_methodt::convert_newarray(
     constant_exprt size_limit = from_integer(max_array_length, java_int_type());
     binary_relation_exprt le_max_size(op[0], ID_le, size_limit);
     code_assumet assume_le_max_size(le_max_size);
-    c.move_to_operands(assume_le_max_size);
+    to_code_block(c).move(assume_le_max_size);
   }
   const exprt tmp = tmp_variable("newarray", ref_type);
-  c.copy_to_operands(code_assignt(tmp, java_new_array));
+  to_code_block(c).add(code_assignt(tmp, java_new_array));
   results[0] = tmp;
 }
 
@@ -2552,8 +2552,8 @@ void java_bytecode_convert_methodt::convert_new(
   if(clinit_call.get_statement() != ID_skip)
   {
     code_blockt ret_block;
-    ret_block.move_to_operands(clinit_call);
-    ret_block.move_to_operands(c);
+    ret_block.move(clinit_call);
+    ret_block.move(c);
     c = std::move(ret_block);
   }
   results[0] = tmp;
@@ -2579,7 +2579,7 @@ codet java_bytecode_convert_methodt::convert_putstatic(
   // the field.
   codet clinit_call = get_clinit_call(arg0.get_string(ID_class));
   if(clinit_call.get_statement() != ID_skip)
-    block.move_to_operands(clinit_call);
+    block.move(clinit_call);
 
   save_stack_entries(
     "stack_static_field",
@@ -2587,7 +2587,7 @@ codet java_bytecode_convert_methodt::convert_putstatic(
     block,
     bytecode_write_typet::STATIC_FIELD,
     symbol_expr.get_identifier());
-  block.copy_to_operands(code_assignt(symbol_expr, op[0]));
+  block.add(code_assignt(symbol_expr, op[0]));
   return block;
 }
 
@@ -2602,7 +2602,7 @@ codet java_bytecode_convert_methodt::convert_putfield(
     block,
     bytecode_write_typet::FIELD,
     arg0.get(ID_component_name));
-  block.copy_to_operands(code_assignt(to_member(op[0], arg0), op[1]));
+  block.add(code_assignt(to_member(op[0], arg0), op[1]));
   return block;
 }
 
@@ -2744,7 +2744,7 @@ codet java_bytecode_convert_methodt::convert_iinc(
     arg1_int_type.make_typecast(java_int_type());
   code_assign.rhs() =
     plus_exprt(variable(arg0, 'i', address, CAST_AS_NEEDED), arg1_int_type);
-  block.copy_to_operands(code_assign);
+  block.add(code_assign);
   return block;
 }
 
@@ -2849,7 +2849,7 @@ code_blockt java_bytecode_convert_methodt::convert_ret(
     code_gotot g(label(number));
     g.add_source_location() = location;
     if(idx == idxlim - 1)
-      c.move_to_operands(g);
+      c.move(g);
     else
     {
       code_ifthenelset branch;
@@ -2860,7 +2860,7 @@ code_blockt java_bytecode_convert_methodt::convert_ret(
       branch.cond().add_source_location() = location;
       branch.then_case() = g;
       branch.add_source_location() = location;
-      c.move_to_operands(branch);
+      c.move(branch);
     }
   }
   return c;
@@ -3274,6 +3274,6 @@ void java_bytecode_convert_methodt::create_stack_tmp_var(
 {
   const exprt tmp_var=
     tmp_variable(tmp_var_prefix, tmp_var_type);
-  block.copy_to_operands(code_assignt(tmp_var, stack_entry));
+  block.add(code_assignt(tmp_var, stack_entry));
   stack_entry=tmp_var;
 }
