@@ -129,8 +129,8 @@ codet java_bytecode_instrumentt::throw_exception(
   throw_expr.copy_to_operands(new_symbol.symbol_expr());
 
   code_blockt throw_code;
-  throw_code.move_to_operands(assign_new);
-  throw_code.copy_to_operands(code_expressiont(throw_expr));
+  throw_code.move(assign_new);
+  throw_code.add(code_expressiont(throw_expr));
 
   code_ifthenelset if_code;
   if_code.add_source_location()=original_loc;
@@ -333,7 +333,7 @@ void java_bytecode_instrumentt::add_expr_instrumentation(
     if(expr_instrumentation->get_statement() == ID_block)
       block.append(to_code_block(*expr_instrumentation));
     else
-      block.move_to_operands(*expr_instrumentation);
+      block.move(*expr_instrumentation);
   }
 }
 
@@ -350,7 +350,7 @@ void java_bytecode_instrumentt::prepend_instrumentation(
     if(code.get_statement()==ID_block)
       instrumentation.append(to_code_block(code));
     else
-      instrumentation.copy_to_operands(code);
+      instrumentation.add(code);
     code=instrumentation;
   }
 }
@@ -452,7 +452,7 @@ void java_bytecode_instrumentt::instrument_code(codet &code)
     // Check for a null this-argument of a virtual call:
     if(function_type.has_this())
     {
-      block.copy_to_operands(
+      block.add(
         check_null_dereference(
           code_function_call.arguments()[0],
           code_function_call.source_location()));
@@ -481,7 +481,7 @@ optionalt<codet> java_bytecode_instrumentt::instrument_expr(const exprt &expr)
   forall_operands(it, expr)
   {
     if(optionalt<codet> op_result = instrument_expr(*it))
-      result.move_to_operands(*op_result);
+      result.move(*op_result);
   }
 
   // Add any check due at this node:
@@ -503,7 +503,7 @@ optionalt<codet> java_bytecode_instrumentt::instrument_expr(const exprt &expr)
             dereference_expr,
             plus_expr.op1(),
             expr.source_location());
-        result.move_to_operands(bounds_check);
+        result.move(bounds_check);
       }
     }
   }
@@ -515,7 +515,7 @@ optionalt<codet> java_bytecode_instrumentt::instrument_expr(const exprt &expr)
     {
       // this corresponds to a throw and so we check that
       // we don't throw null
-      result.copy_to_operands(
+      result.add(
         check_null_dereference(
           expr.op0(),
           expr.source_location()));
@@ -524,7 +524,7 @@ optionalt<codet> java_bytecode_instrumentt::instrument_expr(const exprt &expr)
     {
       // this corresponds to new array so we check that
       // length is >=0
-      result.copy_to_operands(
+      result.add(
         check_array_length(
           expr.op0(),
           expr.source_location()));
@@ -534,7 +534,7 @@ optionalt<codet> java_bytecode_instrumentt::instrument_expr(const exprt &expr)
           expr.type().id()==ID_signedbv)
   {
     // check division by zero (for integer types only)
-    result.copy_to_operands(
+    result.add(
       check_arithmetic_exception(
         expr.op1(),
         expr.source_location()));
@@ -548,7 +548,7 @@ optionalt<codet> java_bytecode_instrumentt::instrument_expr(const exprt &expr)
       check_null_dereference(
         dereference_expr.op0(),
         dereference_expr.source_location());
-    result.move_to_operands(null_dereference_check);
+    result.move(null_dereference_check);
   }
 
   if(result==code_blockt())
@@ -599,7 +599,7 @@ void java_bytecode_instrument_symbol(
 /// \param exc_symbol: the top-level exception symbol
 /// \param source_location: the source location to attach to the assertion
 void java_bytecode_instrument_uncaught_exceptions(
-  codet &init_code,
+  code_blockt &init_code,
   const symbolt &exc_symbol,
   const source_locationt &source_location)
 {
@@ -612,7 +612,7 @@ void java_bytecode_instrument_uncaught_exceptions(
   assert_location.set_comment("no uncaught exception");
   assert_no_exception.add_source_location() = assert_location;
 
-  init_code.move_to_operands(assert_no_exception);
+  init_code.move(assert_no_exception);
 }
 
 /// Instruments all the code in the symbol_table with

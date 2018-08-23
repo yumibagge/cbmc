@@ -73,7 +73,7 @@ void record_function_outputs(
     output.op1()=return_symbol.symbol_expr();
     output.add_source_location()=function.location;
 
-    init_code.move_to_operands(output);
+    init_code.move(output);
   }
 
   #if 0
@@ -218,7 +218,7 @@ bool generate_ansi_c_start_function(
     call_init.add_source_location()=symbol.location;
     call_init.function()=init_it->second.symbol_expr();
 
-    init_code.move_to_operands(call_init);
+    init_code.move(call_init);
   }
 
   // build call to main function
@@ -264,7 +264,7 @@ bool generate_ansi_c_start_function(
         const binary_relation_exprt ge(argc_symbol.symbol_expr(), ID_ge, one);
 
         code_assumet assumption(ge);
-        init_code.move_to_operands(assumption);
+        init_code.move(assumption);
       }
 
       {
@@ -278,7 +278,7 @@ bool generate_ansi_c_start_function(
           argc_symbol.symbol_expr(), ID_le, bound_expr);
 
         code_assumet assumption(le);
-        init_code.move_to_operands(assumption);
+        init_code.move(assumption);
       }
 
       {
@@ -288,7 +288,7 @@ bool generate_ansi_c_start_function(
         input.op0()=address_of_exprt(
           index_exprt(string_constantt("argc"), from_integer(0, index_type())));
         input.op1()=argc_symbol.symbol_expr();
-        init_code.move_to_operands(input);
+        init_code.move(input);
       }
 
       if(parameters.size()==3)
@@ -315,7 +315,7 @@ bool generate_ansi_c_start_function(
           envp_size_symbol.symbol_expr(), ID_le, max_minus_one);
 
         code_assumet assumption(le);
-        init_code.move_to_operands(assumption);
+        init_code.move(assumption);
       }
 
       {
@@ -350,7 +350,7 @@ bool generate_ansi_c_start_function(
         // disable bounds check on that one
         index_expr.set("bounds_check", false);
 
-        init_code.copy_to_operands(code_assignt(index_expr, null));
+        init_code.add(code_assignt(index_expr, null));
       }
 
       if(parameters.size()==3)
@@ -370,7 +370,7 @@ bool generate_ansi_c_start_function(
         const equal_exprt is_null(index_expr, null);
 
         code_assumet assumption2(is_null);
-        init_code.move_to_operands(assumption2);
+        init_code.move(assumption2);
       }
 
       {
@@ -434,7 +434,7 @@ bool generate_ansi_c_start_function(
         symbol_table);
   }
 
-  init_code.move_to_operands(call_main);
+  init_code.move(call_main);
 
   // TODO: add read/modified (recursively in call graph) globals as INPUT/OUTPUT
 

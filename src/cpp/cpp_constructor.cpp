@@ -200,7 +200,7 @@ optionalt<codet> cpp_typecheckt::cpp_constructor(
       assign.move_to_operands(member, val);
       typecheck_side_effect_assignment(assign);
       code_expressiont code_exp(assign);
-      block.move_to_operands(code_exp);
+      block.move(code_exp);
     }
 
     // enter struct scope
@@ -270,7 +270,7 @@ optionalt<codet> cpp_typecheckt::cpp_constructor(
       return to_code(initializer);
     else
     {
-      block.move_to_operands(initializer);
+      block.move(to_code(initializer));
       return block;
     }
   }
