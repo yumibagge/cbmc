@@ -196,7 +196,7 @@ void dep_graph_domaint::transform(
   ai_baset &ai,
   const namespacet &ns)
 {
-  dependence_grapht *dep_graph=dynamic_cast<dependence_grapht*>(&ai);
+  dependence_grapht *dep_graph=static_cast<dependence_grapht*>(&ai);
   assert(dep_graph!=nullptr);
 
   // propagate control dependencies across function calls
@@ -212,7 +212,7 @@ void dep_graph_domaint::transform(
       const goto_programt::const_targett next = std::next(from);
 
       dep_graph_domaint *s=
-        dynamic_cast<dep_graph_domaint*>(&(dep_graph->get_state(next)));
+        static_cast<dep_graph_domaint*>(&(dep_graph->get_state(next)));
       assert(s!=nullptr);
 
       if(s->is_bottom())

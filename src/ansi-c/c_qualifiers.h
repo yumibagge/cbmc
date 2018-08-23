@@ -106,6 +106,7 @@ public:
 
   virtual bool is_subset_of(const qualifierst &other) const override
   {
+    #if 0
     const c_qualifierst *cq = dynamic_cast<const c_qualifierst *>(&other);
     return
       (!is_constant || cq->is_constant) &&
@@ -117,10 +118,13 @@ public:
       (!is_noreturn || cq->is_noreturn);
 
     // is_transparent_union isn't checked
+    #endif
+    return false;
   }
 
   virtual bool operator==(const qualifierst &other) const override
   {
+    #if 0
     const c_qualifierst *cq = dynamic_cast<const c_qualifierst *>(&other);
     return
       is_constant == cq->is_constant &&
@@ -131,10 +135,13 @@ public:
       is_ptr64 == cq->is_ptr64 &&
       is_transparent_union == cq->is_transparent_union &&
       is_noreturn == cq->is_noreturn;
+    #endif
+    return false;
   }
 
   virtual qualifierst &operator+=(const qualifierst &other) override
   {
+    #if 0
     const c_qualifierst *cq = dynamic_cast<const c_qualifierst *>(&other);
     is_constant |= cq->is_constant;
     is_volatile |= cq->is_volatile;
@@ -144,6 +151,7 @@ public:
     is_ptr64 |= cq->is_ptr64;
     is_transparent_union |= cq->is_transparent_union;
     is_noreturn |= cq->is_noreturn;
+    #endif
     return *this;
   }
 

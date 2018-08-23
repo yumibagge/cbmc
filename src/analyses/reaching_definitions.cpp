@@ -62,7 +62,7 @@ void rd_range_domaint::transform(
   const namespacet &ns)
 {
   reaching_definitions_analysist *rd=
-    dynamic_cast<reaching_definitions_analysist*>(&ai);
+    static_cast<reaching_definitions_analysist*>(&ai);
   INVARIANT_STRUCTURED(
     rd!=nullptr,
     bad_cast_exceptiont,
