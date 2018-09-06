@@ -443,7 +443,9 @@ void java_bytecode_convert_methodt::convert(
     id2string(class_symbol.name)+"."+id2string(m.name)+":"+m.descriptor;
   method_id=method_identifier;
 
-  symbolt &method_symbol=*symbol_table.get_writeable(method_identifier);
+  auto method_symbol_ptr=symbol_table.get_writeable(method_identifier);
+  CHECK_RETURN(method_symbol_ptr!=nullptr);
+  symbolt &method_symbol=*method_symbol_ptr;
 
   // Obtain a std::vector of java_method_typet::parametert objects from the
   // (function) type of the symbol
