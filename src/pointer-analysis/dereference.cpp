@@ -129,19 +129,52 @@ exprt dereferencet::read_object(
      base_type_eq(object_type.subtype(), dest_type, ns))
   {
     // check proper alignment
-    exprt size=size_of_expr(dest_type, ns);
+    exprt element_size=size_of_expr(dest_type, ns);
 
-    if(size.is_not_nil())
+    if(element_size.is_not_nil())
     {
-      mp_integer size_constant, offset_constant;
-      if(!to_integer(simplify_expr(size, ns), size_constant) &&
-         !to_integer(simplified_offset, offset_constant) &&
-         (offset_constant%size_constant)==0)
+      // the offset must be a multiple of the element size
+      mp_integer element_size_constant, offset_constant;
+      if(!to_integer(simplify_expr(element_size, ns), element_size_constant))
       {
-        // Yes! Can use index expression!
-        mp_integer index_constant=offset_constant/size_constant;
-        exprt index_expr=from_integer(index_constant, size.type());
-        return index_exprt(object, index_expr, dest_type);
+        if(element_size_constant==1)
+        {
+          // Yes! Can use index expression!
+          return index_exprt(object, offset, dest_type);
+        }
+        else
+        {
+          mp_integer offset_constant, factor;
+
+          if(!to_integer(simplified_offset, offset_constant) &&
+                (offset_constant%element_size_constant)==0)
+          {
+            // Yes! Can use index expression!
+            mp_integer index_constant=offset_constant/element_size_constant;
+            exprt index_expr=from_integer(index_constant, element_size.type());
+            return index_exprt(object, index_expr, dest_type);
+          }
+          else if(simplified_offset.id()==ID_mult &&
+                  simplified_offset.operands().size()==2 &&
+                  !to_integer(simplified_offset.op0(), factor) &&
+                  (factor%element_size_constant)==0)
+          {
+            // Yes! Can use index expression!
+            exprt new_index=simplified_offset;
+            new_index.op0()=from_integer(factor/element_size_constant, new_index.op0().type());
+            return index_exprt(object, new_index, dest_type);
+          }
+          else if(simplified_offset.id()==ID_mult &&
+                  simplified_offset.operands().size()==2 &&
+                  !to_integer(simplified_offset.op1(), factor) &&
+                  (factor%element_size_constant)==0)
+          {
+            // Yes! Can use index expression!
+            exprt new_index=simplified_offset;
+            new_index.op1()=from_integer(factor/element_size_constant, new_index.op1().type());
+            return index_exprt(object, new_index, dest_type);
+          }
+        }
       }
     }
   }
