@@ -10,15 +10,13 @@ Author: Daniel Kroening, kroening@kroening.com
 /// Output of the verification conditions (VCCs)
 
 #include "show_vcc.h"
+#include "symex_target_equation.h"
 
 #include <fstream>
 #include <iostream>
+#include <sstream>
 
-#include <goto-symex/symex_target_equation.h>
-
-#include <langapi/language_util.h>
-#include <langapi/mode.h>
-
+#include <util/format_expr.h>
 #include <util/json.h>
 #include <util/json_expr.h>
 #include <util/ui_message.h>
@@ -62,14 +60,11 @@ void show_vcc_plain(
       {
         if(!p_it->ignore)
         {
-          std::string string_value =
-            from_expr(ns, p_it->source.pc->function, p_it->cond_expr);
-          out << "{-" << count << "} " << string_value << "\n";
+          out << "{-" << count << "} " << format(p_it->cond_expr) << '\n';
 
 #if 0
-          languages.from_expr(p_it->guard_expr, string_value);
-          out << "GUARD: " << string_value << "\n";
-          out << "\n";
+          out << "GUARD: " << format(p_it->guard_expr) << '\n';
+          out << '\n';
 #endif
 
           count++;
@@ -82,9 +77,7 @@ void show_vcc_plain(
       out << u8"\u2500";
     out << '\n';
 
-    std::string string_value =
-      from_expr(ns, s_it->source.pc->function, s_it->cond_expr);
-    out << "{" << 1 << "} " << string_value << "\n";
+    out << '{' << 1 << "} " << format(s_it->cond_expr) << '\n';
   }
 }
 
@@ -133,15 +126,15 @@ void show_vcc_json(
         (p_it->is_assume() || p_it->is_assignment() || p_it->is_constraint()) &&
         !p_it->ignore)
       {
-        std::string string_value =
-          from_expr(ns, p_it->source.pc->function, p_it->cond_expr);
-        json_constraints.push_back(json_stringt(string_value));
+        std::ostringstream string_value;
+        string_value << format(p_it->cond_expr);
+        json_constraints.push_back(json_stringt(string_value.str()));
       }
     }
 
-    std::string string_value =
-      from_expr(ns, s_it->source.pc->function, s_it->cond_expr);
-    object["expression"] = json_stringt(string_value);
+    std::ostringstream string_value;
+    string_value << format(s_it->cond_expr);
+    object["expression"] = json_stringt(string_value.str());
   }
 
   out << ",\n" << json_result;
