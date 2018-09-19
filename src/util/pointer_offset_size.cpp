@@ -117,7 +117,7 @@ mp_integer pointer_offset_bits(
 {
   if(type.id()==ID_array)
   {
-    mp_integer sub=pointer_offset_bits(type.subtype(), ns);
+    mp_integer sub = pointer_offset_bits(to_array_type(type).subtype(), ns);
     if(sub<0)
       return -1;
 
@@ -134,7 +134,7 @@ mp_integer pointer_offset_bits(
   }
   else if(type.id()==ID_vector)
   {
-    mp_integer sub=pointer_offset_bits(type.subtype(), ns);
+    mp_integer sub = pointer_offset_bits(to_vector_type(type).subtype(), ns);
     if(sub<0)
       return -1;
 
@@ -151,7 +151,7 @@ mp_integer pointer_offset_bits(
   }
   else if(type.id()==ID_complex)
   {
-    mp_integer sub=pointer_offset_bits(type.subtype(), ns);
+    mp_integer sub = pointer_offset_bits(to_complex_type(type).subtype(), ns);
     if(sub<0)
       return -1;
 
@@ -204,7 +204,7 @@ mp_integer pointer_offset_bits(
   }
   else if(type.id()==ID_c_enum)
   {
-    return to_bitvector_type(type.subtype()).get_width();
+    return to_bitvector_type(to_c_enum_type(type).subtype()).get_width();
   }
   else if(type.id()==ID_c_enum_tag)
   {
@@ -305,12 +305,14 @@ exprt size_of_expr(
 {
   if(type.id()==ID_array)
   {
-    exprt sub=size_of_expr(type.subtype(), ns);
+    const auto &array_type = to_array_type(type);
+
+    exprt sub = size_of_expr(array_type.subtype(), ns);
     if(sub.is_nil())
       return nil_exprt();
 
     // get size
-    exprt size=to_array_type(type).size();
+    exprt size = array_type.size();
 
     if(size.is_nil())
       return nil_exprt();
@@ -325,7 +327,7 @@ exprt size_of_expr(
   }
   else if(type.id()==ID_vector)
   {
-    exprt sub=size_of_expr(type.subtype(), ns);
+    exprt sub = size_of_expr(to_vector_type(type).subtype(), ns);
     if(sub.is_nil())
       return nil_exprt();
 
@@ -345,7 +347,7 @@ exprt size_of_expr(
   }
   else if(type.id()==ID_complex)
   {
-    exprt sub=size_of_expr(type.subtype(), ns);
+    exprt sub = size_of_expr(to_complex_type(type).subtype(), ns);
     if(sub.is_nil())
       return nil_exprt();
 
@@ -457,7 +459,8 @@ exprt size_of_expr(
   }
   else if(type.id()==ID_c_enum)
   {
-    std::size_t width=to_bitvector_type(type.subtype()).get_width();
+    std::size_t width =
+      to_bitvector_type(to_c_enum_type(type).subtype()).get_width();
     std::size_t bytes=width/8;
     if(bytes*8!=width)
       bytes++;
@@ -522,11 +525,12 @@ mp_integer compute_pointer_offset(
   else if(expr.id()==ID_index)
   {
     const index_exprt &index_expr=to_index_expr(expr);
-    const typet &array_type=ns.follow(index_expr.array().type());
     DATA_INVARIANT(
-      array_type.id()==ID_array,
-      "index into array expected, found "+array_type.id_string());
+      index_expr.array().type().id() == ID_array,
+      "index into array expected, found " +
+        index_expr.array().type().id_string());
 
+    const auto &array_type = to_array_type(index_expr.array().type());
     mp_integer o=compute_pointer_offset(index_expr.array(), ns);
 
     if(o!=-1)

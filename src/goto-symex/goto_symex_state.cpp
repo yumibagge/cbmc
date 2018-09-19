@@ -220,7 +220,7 @@ static bool check_renaming(const typet &type)
         return true;
   }
   else if(type.has_subtype())
-    return check_renaming(type.subtype());
+    return check_renaming(to_type_with_subtype(type).subtype());
 
   return false;
 }
@@ -501,7 +501,7 @@ void goto_symex_statet::rename(
     DATA_INVARIANT(
       expr.type().id() == ID_pointer,
       "type of address_of should be ID_pointer");
-    expr.type().subtype()=expr.op0().type();
+    to_pointer_type(expr.type()).subtype() = expr.op0().type();
   }
   else
   {
@@ -737,7 +737,7 @@ void goto_symex_statet::rename_address(
 
       rename_address(index_expr.array(), ns, level);
       PRECONDITION(index_expr.array().type().id() == ID_array);
-      expr.type()=index_expr.array().type().subtype();
+      expr.type() = to_array_type(index_expr.array().type()).subtype();
 
       // the index is not an address
       rename(index_expr.index(), ns, level);
@@ -822,8 +822,9 @@ void goto_symex_statet::rename(
 
   if(type.id()==ID_array)
   {
-    rename(type.subtype(), irep_idt(), ns, level);
-    rename(to_array_type(type).size(), ns, level);
+    auto &array_type = to_array_type(type);
+    rename(array_type.subtype(), irep_idt(), ns, level);
+    rename(array_type.size(), ns, level);
   }
   else if(type.id()==ID_struct ||
           type.id()==ID_union ||
@@ -844,7 +845,7 @@ void goto_symex_statet::rename(
   }
   else if(type.id()==ID_pointer)
   {
-    rename(type.subtype(), irep_idt(), ns, level);
+    rename(to_pointer_type(type).subtype(), irep_idt(), ns, level);
   }
   else if(type.id() == ID_symbol_type)
   {
@@ -888,8 +889,9 @@ void goto_symex_statet::get_original_name(typet &type) const
 
   if(type.id()==ID_array)
   {
-    get_original_name(type.subtype());
-    get_original_name(to_array_type(type).size());
+    auto &array_type = to_array_type(type);
+    get_original_name(array_type.subtype());
+    get_original_name(array_type.size());
   }
   else if(type.id()==ID_struct ||
           type.id()==ID_union ||
@@ -906,7 +908,7 @@ void goto_symex_statet::get_original_name(typet &type) const
   }
   else if(type.id()==ID_pointer)
   {
-    get_original_name(type.subtype());
+    get_original_name(to_pointer_type(type).subtype());
   }
 }
 

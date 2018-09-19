@@ -1450,8 +1450,12 @@ public:
   {
   }
 
-  index_exprt(const exprt &_array, const exprt &_index):
-    binary_exprt(_array, ID_index, _index, _array.type().subtype())
+  index_exprt(const exprt &_array, const exprt &_index)
+    : binary_exprt(
+        _array,
+        ID_index,
+        _index,
+        to_type_with_subtype(_array.type()).subtype())
   {
   }
 
@@ -3202,10 +3206,10 @@ public:
   {
   }
 
-  explicit dereference_exprt(const exprt &op):
-    unary_exprt(ID_dereference, op, op.type().subtype())
+  explicit dereference_exprt(const exprt &op) : unary_exprt(ID_dereference, op)
   {
     PRECONDITION(op.type().id()==ID_pointer);
+    type() = to_pointer_type(op.type()).subtype();
   }
 
   dereference_exprt(const exprt &op, const typet &type):
