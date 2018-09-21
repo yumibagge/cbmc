@@ -43,10 +43,10 @@ void show_vcc_plain(
       out << '\n';
 
     if(s_it->source.pc->source_location.is_not_nil())
-      out << s_it->source.pc->source_location << "\n";
+      out << s_it->source.pc->source_location << '\n';
 
     if(s_it->comment != "")
-      out << s_it->comment << "\n";
+      out << s_it->comment << '\n';
 
     symex_target_equationt::SSA_stepst::const_iterator p_it =
       equation.SSA_steps.begin();
@@ -77,7 +77,7 @@ void show_vcc_plain(
       out << u8"\u2500";
     out << '\n';
 
-    out << '{' << 1 << "} " << format(s_it->cond_expr) << '\n';
+    out << "{1} " << format(s_it->cond_expr) << '\n';
   }
 }
 
