@@ -259,7 +259,7 @@ bool simplify_exprt::simplify_typecast(exprt &expr)
     const exprt one = from_integer(1, expr_type);
     const exprt zero = from_integer(0, expr_type);
     if_exprt tmp(expr.op0(), one, zero);
-    simplify_if(tmp);
+    simplify_if_preorder(tmp);
     expr.swap(tmp);
     return false;
   }
