@@ -483,14 +483,14 @@ bool simplify_exprt::simplify_plus(exprt &expr)
     {
       exprt op0=expr.op0();
 
-      if(expr.op0().op1().id()==ID_plus)
-        op0.op1().copy_to_operands(expr.op1());
-      else
-        op0.op1()=plus_exprt(op0.op1(), expr.op1());
+      const auto op1_casted=
+        typecast_exprt::conditional_cast(expr.op1(), op0.op1().type());
+
+      op0.op1()=plus_exprt(op0.op1(), op1_casted);
 
       expr.swap(op0);
 
-      simplify_plus(expr.op1());
+      simplify_rec(expr.op1());
       simplify_plus(expr);
 
       return false;
