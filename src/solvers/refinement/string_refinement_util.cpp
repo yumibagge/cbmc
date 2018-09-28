@@ -30,7 +30,7 @@ static void for_each_atomic_string(
 bool is_char_type(const typet &type, const namespacet &ns)
 {
   if(type.id() == ID_symbol_type)
-    return is_char_type(ns.follow(type), ns);
+    return is_char_type(ns.follow(to_symbol_type(type)), ns);
 
   return type.id() == ID_unsignedbv &&
          to_unsignedbv_type(type).get_width() <=
@@ -46,12 +46,15 @@ bool is_char_array_type(const typet &type, const namespacet &ns)
 
 bool is_char_pointer_type(const typet &type, const namespacet &ns)
 {
+  if(type.id() == ID_symbol_type)
+    return is_char_pointer_type(ns.follow(to_symbol_type(type)), ns);
+
   return type.id() == ID_pointer && is_char_type(type.subtype(), ns);
 }
 
 bool has_char_pointer_subtype(const typet &type, const namespacet &ns)
 {
-  return has_subtype(type, is_char_pointer_type);
+  return has_subtype(type, is_char_pointer_type, ns);
 }
 
 bool has_char_array_subexpr(const exprt &expr, const namespacet &ns)

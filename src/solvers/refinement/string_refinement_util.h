@@ -340,6 +340,7 @@ private:
 bool add_node(
   string_dependenciest &dependencies,
   const equal_exprt &equation,
-  array_poolt &array_pool);
+  array_poolt &array_pool,
+  const namespacet &ns);
 
 #endif // CPROVER_SOLVERS_REFINEMENT_STRING_REFINEMENT_UTIL_H
