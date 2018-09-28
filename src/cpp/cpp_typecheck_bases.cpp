@@ -43,6 +43,9 @@ void cpp_typecheckt::typecheck_compound_bases(struct_typet &type)
     // elaborate any class template instances given as bases
     elaborate_class_template(base_symbol_expr.type());
 
+    if(base_symbol_expr.type().id() == ID_struct_tag)
+      base_symbol_expr.type().id(ID_symbol_type);
+
     if(base_symbol_expr.type().id() != ID_symbol_type)
     {
       error().source_location=name.source_location();
@@ -66,6 +69,8 @@ void cpp_typecheckt::typecheck_compound_bases(struct_typet &type)
               << to_string(base_symbol.type) << "'" << eom;
       throw 0;
     }
+
+    base_symbol_expr.type().id(ID_symbol_type);
 
     bool virtual_base = base_it->get_bool(ID_virtual);
     irep_idt class_access = base_it->get(ID_protection);
