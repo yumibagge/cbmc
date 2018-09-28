@@ -22,7 +22,7 @@
 /// steps for these, but should not affect correctness.
 /// \param type: a type
 /// \return true if the given type represents characters
-bool is_char_type(const typet &type);
+bool is_char_type(const typet &type, const namespacet &ns);
 
 /// Distinguish char array from other types.
 /// For now, any unsigned bitvector type is considered a character.
@@ -34,7 +34,7 @@ bool is_char_array_type(const typet &type, const namespacet &ns);
 /// For now, any unsigned bitvector type is considered a character.
 /// \param type: a type
 /// \return true if the given type represents a pointer to characters
-bool is_char_pointer_type(const typet &type);
+bool is_char_pointer_type(const typet &type, const namespacet &ns);
 
 /// \param type: a type
 /// \param ns: namespace
