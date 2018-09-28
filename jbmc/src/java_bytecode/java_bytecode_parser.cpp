@@ -748,11 +748,9 @@ void java_bytecode_parsert::rconstant_pool()
         const pool_entryt &class_name_entry=pool_entry(class_entry.ref1);
         typet type=type_entry(nameandtype_entry.ref2);
 
-        symbol_typet class_symbol=
-          java_classname(id2string(class_name_entry.s));
+        auto class_tag = java_classname(id2string(class_name_entry.s));
 
-        fieldref_exprt fieldref(
-          type, name_entry.s, class_symbol.get_identifier());
+        fieldref_exprt fieldref(type, name_entry.s, class_tag.get_identifier());
 
         it->expr=fieldref;
       }
@@ -767,15 +765,13 @@ void java_bytecode_parsert::rconstant_pool()
         const pool_entryt &class_name_entry=pool_entry(class_entry.ref1);
         typet type=type_entry(nameandtype_entry.ref2);
 
-        symbol_typet class_symbol=
-          java_classname(id2string(class_name_entry.s));
+        auto class_tag = java_classname(id2string(class_name_entry.s));
 
         irep_idt component_name=
           id2string(name_entry.s)+
           ":"+id2string(pool_entry(nameandtype_entry.ref2).s);
 
-        irep_idt class_name=
-          class_symbol.get_identifier();
+        irep_idt class_name = class_tag.get_identifier();
 
         irep_idt identifier=
           id2string(class_name)+"."+id2string(component_name);
@@ -1200,8 +1196,8 @@ void java_bytecode_parsert::rmethod_attribute(methodt &method)
       method.exception_table[e].end_pc=end_pc;
       method.exception_table[e].handler_pc=handler_pc;
       if(catch_type!=0)
-        method.exception_table[e].catch_type=
-          to_symbol_type(pool_entry(catch_type).expr.type());
+        method.exception_table[e].catch_type =
+          to_struct_tag_type(pool_entry(catch_type).expr.type());
     }
 
     u2 attributes_count=read_u2();

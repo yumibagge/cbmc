@@ -115,7 +115,7 @@ void ci_lazy_methods_neededt::gather_field_types(
     if(class_type.id() == ID_symbol_type)
     {
       const typet &element_type =
-        java_array_element_type(to_symbol_type(class_type));
+        java_array_element_type(to_struct_tag_type(class_type));
       if(element_type.id() == ID_pointer)
       {
         // This is a reference array -- mark its element type available.

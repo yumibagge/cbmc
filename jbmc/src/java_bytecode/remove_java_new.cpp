@@ -96,7 +96,7 @@ goto_programt::targett remove_java_newt::lower_java_new(
   exprt zero_object =
     zero_initializer(object_type, location, ns, get_message_handler());
   set_class_identifier(
-    to_struct_expr(zero_object), ns, to_symbol_type(object_type));
+    to_struct_expr(zero_object), ns, to_struct_tag_type(object_type));
   goto_programt::targett t_i = dest.insert_after(target);
   t_i->make_assignment(code_assignt(deref, zero_object));
   t_i->source_location = location;
@@ -156,7 +156,7 @@ goto_programt::targett remove_java_newt::lower_java_new_array(
   exprt zero_object =
     zero_initializer(object_type, location, ns, get_message_handler());
   set_class_identifier(
-    to_struct_expr(zero_object), ns, to_symbol_type(object_type));
+    to_struct_expr(zero_object), ns, to_struct_tag_type(object_type));
   goto_programt::targett t_i = dest.insert_before(next);
   t_i->make_assignment(code_assignt(deref, zero_object));
   t_i->source_location = location;

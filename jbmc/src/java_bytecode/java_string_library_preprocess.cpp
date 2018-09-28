@@ -234,11 +234,11 @@ void java_string_library_preprocesst::add_string_type(
   string_type.components()[2].set_pretty_name("data");
   string_type.components()[2].type() = pointer_type(java_char_type());
   string_type.set_access(ID_public);
-  string_type.add_base(symbol_typet("java::java.lang.Object"));
+  string_type.add_base(struct_tag_typet("java::java.lang.Object"));
 
   std::vector<irep_idt> bases = get_string_type_base_classes(class_name);
   for(const irep_idt &base_name : bases)
-    string_type.add_base(symbol_typet("java::" + id2string(base_name)));
+    string_type.add_base(struct_tag_typet("java::" + id2string(base_name)));
 
   symbolt tmp_string_symbol;
   tmp_string_symbol.name="java::"+id2string(class_name);

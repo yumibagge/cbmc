@@ -11,9 +11,10 @@
 /// \file
 /// Handle selection of correct pointer type (for example changing abstract
 /// classes to concrete versions).
+#include "java_types.h"
+
 #include <vector>
 
-#include "java_types.h"
 #include <util/optional.h>
 #include <util/std_types.h>
 
@@ -42,7 +43,7 @@ public:
       &generic_parameter_specialization_map,
     const namespacet &ns) const;
 
-  virtual std::set<symbol_typet> get_parameter_alternative_types(
+  virtual std::set<struct_tag_typet> get_parameter_alternative_types(
     const irep_idt &function_name,
     const irep_idt &parameter_name,
     const namespacet &ns) const;
