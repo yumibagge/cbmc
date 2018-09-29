@@ -486,9 +486,9 @@ utf16_constant_array_to_java(const array_exprt &arr, std::size_t length)
   for(std::size_t i=0; i<arr.operands().size() && i<length; i++)
   {
     PRECONDITION(arr.operands()[i].id()==ID_constant);
-    auto c=numeric_cast<unsigned>(to_constant_expr(arr.operands()[i]));
+    auto c = numeric_cast<unsigned>(to_constant_expr(arr.operands()[i]));
     INVARIANT(c.has_value(), "constant should be convertible to unsigned");
-    out[i]=c.value();
+    out[i] = c.value();
   }
   return utf16_native_endian_to_java(out);
 }
@@ -519,10 +519,10 @@ std::pair<exprt, string_constraintst> add_axioms_for_format(
     char_array_of_pointer(array_pool, f.arguments()[1], f.arguments()[0]);
   const array_string_exprt s1 = get_string_expr(array_pool, f.arguments()[2]);
 
-  if(s1.length().id()==ID_constant &&
-     s1.content().id()==ID_array)
+  if(s1.length().id() == ID_constant && s1.content().id() == ID_array)
   {
-    const auto length=numeric_cast_v<std::size_t>(to_constant_expr(s1.length()));
+    const auto length =
+      numeric_cast_v<std::size_t>(to_constant_expr(s1.length()));
     std::string s=utf16_constant_array_to_java(
       to_array_expr(s1.content()), length);
     // List of arguments after s
