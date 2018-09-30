@@ -141,7 +141,7 @@ static void monitor_exits(codet &code, const codet &monitorexit)
     // Replace the return with a monitor exit plus return block
     code_blockt return_block;
     return_block.add(monitorexit);
-    return_block.move_to_operands(code);
+    return_block.move(code);
     code = return_block;
   }
   else if(
@@ -262,11 +262,11 @@ static void instrument_synchronized_code(
 
   // Wrap the code into a try finally
   code_blockt try_block;
-  try_block.move_to_operands(monitorenter);
-  try_block.move_to_operands(catch_push);
-  try_block.move_to_operands(code);
-  try_block.move_to_operands(catch_pop);
-  try_block.move_to_operands(catch_label);
+  try_block.move(monitorenter);
+  try_block.move(catch_push);
+  try_block.move(code);
+  try_block.move(catch_pop);
+  try_block.move(catch_label);
   code = try_block;
 }
 

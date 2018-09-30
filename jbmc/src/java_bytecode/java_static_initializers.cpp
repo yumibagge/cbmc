@@ -210,7 +210,7 @@ static void clinit_wrapper_do_recursive_calls(
       continue;
     code_function_callt call_base;
     call_base.function() = findit->second.symbol_expr();
-    init_body.move_to_operands(call_base);
+    init_body.move(call_base);
   }
 
   const irep_idt &real_clinit_name = clinit_function_name(class_name);
@@ -219,7 +219,7 @@ static void clinit_wrapper_do_recursive_calls(
   {
     code_function_callt call_real_init;
     call_real_init.function() = find_sym_it->second.symbol_expr();
-    init_body.move_to_operands(call_real_init);
+    init_body.move(call_real_init);
   }
 
   // If nondet-static option is given, add a standard nondet initialization for
@@ -691,7 +691,7 @@ codet get_clinit_wrapper_body(
   // add the "already-run = false" statement
   code_blockt init_body;
   code_assignt set_already_run(already_run_symbol.symbol_expr(), true_exprt());
-  init_body.move_to_operands(set_already_run);
+  init_body.move(set_already_run);
 
   clinit_wrapper_do_recursive_calls(
     symbol_table,

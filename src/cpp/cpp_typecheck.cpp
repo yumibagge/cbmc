@@ -177,7 +177,7 @@ void cpp_typecheckt::static_and_dynamic_initialization()
       // This will be a constructor call,
       // which we execute.
       assert(symbol.value.id()==ID_code);
-      init_block.copy_to_operands(symbol.value);
+      init_block.add(to_code(symbol.value));
 
       // Make it nil to get zero initialization by
       // __CPROVER_initialize

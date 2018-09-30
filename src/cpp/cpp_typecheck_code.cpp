@@ -163,7 +163,8 @@ void cpp_typecheckt::typecheck_switch(code_switcht &code)
     c_typecheck_baset::typecheck_switch(code);
 
     code_blockt code_block;
-    code_block.move_to_operands(decl.op0(), code);
+    code_block.move(to_code(decl.op0()));
+    code_block.move(code);
     code.swap(code_block);
   }
   else
