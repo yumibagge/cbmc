@@ -146,6 +146,37 @@ jobs:
         - EXTRA_CXXFLAGS="-DDEBUG"
       script: echo "Not running any tests for a debug build."
 
+    # Ubuntu Linux with glibc using g++-5, coverage mode
+    - stage: Test different OS/CXX/Flags
+      os: linux
+      sudo: false
+      compiler: gcc
+      cache: ccache
+      addons:
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+          packages:
+            - libwww-perl
+            - g++-5
+            - libubsan0
+            - jq
+            - gdb
+      before_install:
+        - mkdir bin
+        - ln -s /usr/bin/gcc-5 bin/gcc
+        - ln -s /usr/bin/g++-5 bin/g++
+      install:
+        - ccache -z
+        - ccache --max-size=1G
+        - cmake -H. -Bbuild '-Denable_coverage=1' '-Dparallel_tests=2' 
+        - git submodule update --init --recursive
+        - make -C cov-build coverage
+      script: echo "Running any tests for a debug build."
+      after_success:
+        # codecov
+        - bash <(curl -s https://codecov.io/bash)
+
     # Ubuntu Linux with glibc using clang++-7, debug mode, disable USE_DSTRING
     - stage: Test different OS/CXX/Flags
       os: linux
